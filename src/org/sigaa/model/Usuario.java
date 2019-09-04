@@ -5,7 +5,6 @@ public class Usuario {
 	private String nome;
 	private String usuario;
 	private String senha;
-	private int matricula;
 	
 	public Usuario(String usuario, String senha) {
 		this.usuario = usuario;
@@ -29,11 +28,5 @@ public class Usuario {
 	}
 	public void setSenha(String senha) {
 		this.senha = senha;
-	}
-	public int getMatricula() {
-		return matricula;
-	}
-	public void setMatricula(int matricula) {
-		this.matricula = matricula;
 	}
 }
