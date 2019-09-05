@@ -5,7 +5,8 @@ public class Turma {
 	private String codigo;
 	private String local;
 	private String horario;
-	
+	private int _id;
+	private String _jvf;
 	
 	public String getNome() {
 		return nome;
@@ -30,5 +31,19 @@ public class Turma {
 	}
 	public void setHorario(String horario) {
 		this.horario = horario;
+	}
+	
+	
+	public int get_id() {
+		return _id;
+	}
+	public void set_id(int _id) {
+		this._id = _id;
+	}
+	public String get_jvf() {
+		return _jvf;
+	}
+	public void set_jvf(String _jvf) {
+		this._jvf = _jvf;
 	}
 }

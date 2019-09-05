@@ -1,4 +1,4 @@
-package org.sigaa.disserializer;
+package org.sigaa.deserializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +23,17 @@ public class DesserializadorPaginaMenu {
 			Elements dados = disciplina.children();
 			if(dados.size()==1) return;
 			
+			final int id = Integer.parseInt(dados.get(0).children()
+					.get(0).children().get(1).val());
+			final String jvs = dados.get(0).children().get(0)
+					.children().get(3).val();
 			final String nome = dados.get(0).text();
 			final String codigo = dados.get(1).text();
 			final String local = dados.get(2).text();
 			final String horario = dados.get(3).text();
 			
+			dis.set_id(id);
+			dis.set_jvf(jvs);
 			dis.setNome(nome);
 			dis.setCodigo(codigo);
 			dis.setLocal(local);
@@ -59,6 +65,14 @@ public class DesserializadorPaginaMenu {
 		dadosInstitucionais.setEntrada(entrada);
 		
 		menu.setDadosInstitucionais(dadosInstitucionais);
+		
+		/* Pega os dados do URL da imagem */
+		String urlImgPerfil = documento.getElementsByClass("foto").get(0)
+			.children().get(0).attr("src")
+			.replace("/sigaa/", "https://si3.ufc.br/sigaa/");
+		
+		menu.setImagemPerfil(urlImgPerfil);
+		
 		return menu;
 	}
 }

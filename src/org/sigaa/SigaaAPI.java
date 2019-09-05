@@ -7,12 +7,16 @@ import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.sigaa.disserializer.DesserializadorPaginaMenu;
+import org.sigaa.deserializer.DesserializadorPaginaMenu;
+import org.sigaa.deserializer.DesserializadorPaginaTurma;
 import org.sigaa.model.Autenticacao;
 import org.sigaa.model.PaginaMenu;
+import org.sigaa.model.PaginaTurma;
+import org.sigaa.model.Turma;
 import org.sigaa.model.Usuario;
 import org.sigaa.model.response.RequisicaoLogin;
 import org.sigaa.model.response.RequisicaoMenu;
+import org.sigaa.model.response.RequisicaoTurma;
 
 public class SigaaAPI {
 	
@@ -109,6 +113,33 @@ public class SigaaAPI {
 		return aut;
 	}
 	
+	public RequisicaoTurma getTurma(Turma turma) throws IOException {
+		if(usuario == null) {
+			throw new RuntimeException("O login é necessario para ver turma");
+		}
+		RequisicaoTurma req = new RequisicaoTurma();
+		Response res = Jsoup.connect("https://si3.ufc.br/sigaa/portais/discente/discente.jsf")
+				.data("form_acessarTurmaVirtual","form_acessarTurmaVirtual")
+				.data("idTurma",String.valueOf(turma.get_id()))
+				.data("javax.faces.ViewState",turma.get_jvf())
+				.data("form_acessarTurmaVirtual:turmaVirtual","form_acessarTurmaVirtual:turmaVirtual")
+				.header("Content-Type", "application/x-www-form-urlencoded")
+				.header("Cookie", validJsessionID)
+				.header("Referer", "https://si3.ufc.br/sigaa/portais/discente/discente.jsf")
+				.method(Method.POST).execute();
+		
+		if(res.statusCode() == 200) {
+			PaginaTurma pagina = new DesserializadorPaginaTurma().desserializar(res.parse());
+			req.setPaginaTurma(pagina);
+			req.setSucesso(true);
+		}else {
+			req.setMensagemErro("Erro, mensagem HTTP: " + res.statusCode());
+			req.setSucesso(false);
+		}
+		
+		return req;
+	}
+	
  	private String getValidJsessionID() {
 		Response res;
 		Map<String, String> jsession = null;
@@ -119,5 +150,24 @@ public class SigaaAPI {
 			e.printStackTrace();
 		}
 		return "JSESSIONID=" + jsession.get("JSESSIONID");
+	}
+ 	
+ 	/**
+ 	 * Realiza o logout no SIGAA
+ 	 * @throws IOException 
+ 	 */
+ 	public void logout() throws IOException {
+ 		if(usuario != null) {
+ 			Jsoup.connect("https://si3.ufc.br/sigaa/logar.do?dispatch=logOff")
+ 					.header("Cookie", validJsessionID)
+ 					.header("Host", "si3.ufc.br")
+ 					.header("Referer", "https://si3.ufc.br/sigaa/paginaInicial.do")
+ 					.get();
+ 			
+ 		}
+ 	}
+
+	public Autenticacao getUsuario() {
+		return usuario;
 	}
 }
